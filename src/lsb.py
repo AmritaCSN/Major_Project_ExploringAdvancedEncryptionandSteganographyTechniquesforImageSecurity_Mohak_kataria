@@ -27,7 +27,7 @@ import cv2
 import pandas as pd
 import matplotlib.pyplot as plt
 from infoentrophy import information_entropy
-from rsa import RSA
+from rsa_python import rsa
 def main():
     path = ''
     while(not path):
@@ -50,7 +50,7 @@ def main():
     
     for mode in ['AES', 'DES', 'ChaCha20', 'RSA']:
         print(f"================== Using {mode} ==============================")
-        print(f"Msg Len\tSteghide Time\t\tStegunhide Time")
+        print(f"Msg Len\tencryption Time\t\tDecryption Time")
         
         for i in range(1, 12, 1):
             key='12345678'
@@ -82,18 +82,17 @@ def main():
             if mode=='RSA':
                 if os.path.isfile(output_path):
                     os.remove(output_path)
-                p=17
-                q=14
-                rsa_algo=RSA(p,q)
+              
+                key_pair=rsa.generate_key_pair(1024)
                 enc_start_time=time.time()
-                encrypted_data=rsa_algo.encrypt(message)
+                encrypted_data=rsa.encrypt(message,key_pair['public'],key_pair['modulus'])
                 secret=lsb.hide(path,encrypted_data)
                 secret.save(output_path)
                 enc_time=time.time()-enc_start_time
                 # now we extract the data and check the time
                 dec_start = time.time()
                 encrypted_data = lsb.reveal(output_path)
-                decrypted_data = rsa_algo.decrypt(encrypted_data)
+                decrypted_data = rsa.decrypt(encrypted_data, key_pair['private'], key_pair['modulus'])
                 dec_time = time.time() - dec_start
                 runtime.append(dec_time)
                 print(f"{len(message)}\t{enc_time}\t{dec_time}")

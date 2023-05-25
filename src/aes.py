@@ -29,17 +29,3 @@ class AESCipher(object):
     def _unpad(s):
         return s[:-ord(s[len(s)-1:])]
 
-# test_object=AESCipher('12345678')
-# print("AES :")
-# print("Data Len\tEnc Time\tDec Time")
-# for i in range(20):
-#     s_time=time.time()
-#     message = 'a'*(2**i)
-#     encrypted_text=test_object.encrypt(message)
-#     dec_time=time.time()-s_time
-
-#     s_time=time.time()
-#     decrypted_text=test_object.decrypt(encrypted_text)
-#     enc_time=time.time()-s_time
-
-#     print(f"{len(message)}\t{enc_time}\t\t{dec_time}")

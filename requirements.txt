@@ -1,5 +1,7 @@
-json
-base64
 pycryptodome
 stegano
 rsa-python
+numpy
+pandas
+opencv-python
+matplotlib

@@ -38,12 +38,13 @@ Usage
 
     Run the LSB embedding and extraction: python lsb.py
 
+
 Follow the prompts to select the encryption algorithm, provide the necessary inputs (image file), and specify the output filenames.
 
 The program will encrypt the plaintext, embed the encrypted message within the image using LSB, and save the steganographic image.
 To extract the encrypted message from the steganographic image, run the LSB extraction again and provide the steganographic image file.
 
-Run the Spread Spectrum embedding and extraction: python spread_spectrum.py
+    Run the Spread Spectrum embedding and extraction: python spread_spectrum.py
 
 Follow the prompts to select the encryption algorithm, provide the necessary inputs (plaintext, key, image file), and specify the output filenames.
 

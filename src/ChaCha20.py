@@ -17,7 +17,7 @@ class Chacha20(object):
     '''
     pass
 
-  def encrypt(plaintext='input to do bhai!'):
+  def encrypt(plaintext='plaintext'):
     '''
     This method takes the plaintext and returns the ciphertext alongwith the nonce
     '''
@@ -30,7 +30,6 @@ class Chacha20(object):
     ct = b64encode(ciphertext).decode('utf-8')
     result = json.dumps({'nonce':nonce, 'ciphertext':ct})
     return(result)
-    #return ct
 
   def decrypt(result=''):
     if(result == ''):

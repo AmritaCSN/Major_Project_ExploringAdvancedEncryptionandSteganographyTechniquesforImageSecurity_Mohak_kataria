@@ -211,7 +211,6 @@ def main(path):
                 dec_start = time.time()
                 decrypted_data=rsa.decrypt(encrypted_data, key_pair["private"], key_pair["modulus"])
                 dec_time = time.time() - dec_start
-                #print("decrypted data is: ",decrypted_data)
                 print(f"{len(message)}\t\t{enc_time}\t\t{dec_time}")
             
             elif mode=='ChaCha20':

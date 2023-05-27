@@ -1,7 +1,7 @@
 '''
 This program does the following:
     encrypts the text using ChaCha20, AES, DES, and RSA
-    then hides it in a simple image  - using Spread Spectrum Embedding technique
+    then hides it in a simple image
     then extract it from the image
     finally decrypts the extracted text
 
@@ -65,17 +65,17 @@ def embed(cover_image, secret_data):
         break
 
     # Saving the stegoed-image
-    cv2.imwrite('stegoo_test.png', cover_image) #we have to change this for every image to add stegoed images, tried but getting errors so working manually.
-def dembed(stego_image):
+    cv2.imwrite('chootad.png', cover_image) #we have to change this for every image to add stegoed images, tried but getting errors so working manually.
+def dembed(chootad):
                 bin_data = ''
-                stego_height=stego_image.shape[0]
-                stego_width=stego_image.shape[1]
-                stego_cha=stego_image.shape[2]
+                stego_height=chootad.shape[0]
+                stego_width=chootad.shape[1]
+                stego_cha=chootad.shape[2]
                 for row in range(stego_height):
                     for col in range(stego_width):
                         for channel in range(stego_cha):
        # Converting pixel value to binary string
-                            binary_pixel = format(stego_image[row, col, channel], '08b')
+                            binary_pixel = format(chootad[row, col, channel], '08b')
 
         # Extracting binary string of pixel 
                             bin_data += binary_pixel[-2:]
@@ -84,21 +84,9 @@ def dembed(stego_image):
                 secret_data = ''
                 for i in range(0, len(bin_data), 8):
                     secret_data += chr(int(bin_data[i:i+8], 2))
-def main():
-    path = ''
-    while(not path):
-        path = input("Enter file to hide text into : ")
-    
-    image_name = path.split("/")[-1]
-    directory = path.replace(image_name, "")
-    output_path = directory + "_stegoed_" + image_name
+def main(path):
 
-    # debug
-
-    print(f"path = {path}")
-    print(f"image_name = {image_name}")
-    print(f"directory = {directory}")
-    print(f"output_path = {output_path}")
+    stegoed_image = path.split(".")[-2]+ "_stegoed.png"
 
     message=''
     enc_time=0.0
@@ -114,8 +102,6 @@ def main():
             message='a'*(2**i)
             
             if mode=='AES':
-                if os.path.isfile(output_path):
-                        os.remove(output_path)
 
                 aes_algo=AESCipher(key)
 
@@ -129,9 +115,8 @@ def main():
                 secret_data=encrypted_data
                 embed(cover_image,secret_data)
     # Saving the stegoed-image
-                #cv2.imwrite('stegoo_test.png', cover_image) #we have to change this for every image to add stegoed images, tried but getting errors so working manually.
-                stego_image=cv2.imread(path)
-                dembed(stego_image) 
+                stegoed_image=cv2.imread(path)
+                dembed(stegoed_image) 
                 # now we extract the data and check the time
                 dec_start = time.time()
                 dec_time = time.time() - dec_start
@@ -140,9 +125,6 @@ def main():
                 print(f"{len(message)}\t\t{enc_time}\t\t{dec_time}")
             
             elif mode=='DES':
-                if os.path.isfile(output_path):
-                        os.remove(output_path)
-                
                 des_object=DESCipher(key)
 
                 enc_start_time=time.time()
@@ -154,8 +136,8 @@ def main():
                 secret_data=encrypted_data
                 
                 embed(cover_image,secret_data)
-                stego_image=cv2.imread(path)
-                dembed(stego_image)
+                stegoed_image=cv2.imread(path)
+                dembed(stegoed_image)
  
                 # now we extract the data and check the time
                 dec_start = time.time()
@@ -163,8 +145,6 @@ def main():
                 print(f"{len(message)}\t{enc_time}\t{dec_time}")
             
             if mode=='RSA':
-                if os.path.isfile(output_path):
-                        os.remove(output_path)
                 key_pair=rsa.generate_key_pair(1024)
                 enc_start_time=time.time()
                 encrypted_data=rsa.encrypt(message,key_pair["public"], key_pair["modulus"])
@@ -205,22 +185,23 @@ def main():
                     break
 
     # Saving the updated image as  stegoed-image
-                cv2.imwrite('stegoo_test.png', cover_image)
+                stegoed_image = path.split(".")[-2]+ "_stegoed.png"
+                cv2.imwrite(stegoed_image, cover_image)
             
              # Loading the  stegoed-image
-                stego_image = cv2.imread('stegoo_test.png')
+                stegoed_image = cv2.imread(stegoed_image)
 
     # Extract ciphertext  from stego-image
                 binary_data = ''
-                stego_height=stego_image.shape[0]
-                stego_width=stego_image.shape[1]
-                stego_cha=stego_image.shape[2]
+                stego_height=stegoed_image.shape[0]
+                stego_width=stegoed_image.shape[1]
+                stego_cha=stegoed_image.shape[2]
     # loops to dembeed the ciphertext in the images. Convert ciphertext to binary. Row and column and then channel.             
                 for row in range(stego_height):
                     for col in range(stego_width):
                         for channel in range(stego_cha):
                 # Converting the pixel value to binary string
-                            binary_pixel = format(stego_image[row, col, channel], '08b')
+                            binary_pixel = format(stegoed_image[row, col, channel], '08b')
                 # extracting the pixel value
                             binary_data += binary_pixel[-2:]
     # Converting the above receieved binary string to ASCII string
@@ -237,8 +218,6 @@ def main():
                 print(f"{len(message)}\t\t{enc_time}\t\t{dec_time}")
             
             if mode=='ChaCha20':
-                if os.path.isfile(output_path):
-                        os.remove(output_path)
 
                 enc_start_time=time.time()
                 encrypted_data=Chacha20.encrypt(message)
@@ -249,21 +228,24 @@ def main():
                 #print("the secret data is :", secret_data)
                 #print("the type of secret data is :", type(secret_data))
                 embed(cover_image,secret_data)
-                stego_image=cv2.imread(path)
-                dembed(stego_image) 
+                stegoed_image=cv2.imread(path)
+                dembed(stegoed_image) 
                 # now we extract the data and check the time
                 dec_start = time.time()
                 dec_time = time.time() - dec_start
                 print(f"{len(message)}\t{enc_time}\t{dec_time}")
 
 if __name__ == '__main__':
-    main()
+    path = ''
+    while(not path):
+        path = input("Enter file to hide text into : ")
+    main(path)
     # Load original and stego images
-    original_image = cv2.imread('test.png')
-    stego_image = cv2.imread('stegoo_test.png')
-    print("this is the shape of stego_image",stego_image.shape)
+    original_image = cv2.imread(path)
+    stegoed_image = path.split(".")[-2]+ "_stegoed.png"
+    stegoed_image = cv2.imread(stegoed_image)
     # Calculate MSE and PSNR
-    mse = np.mean((original_image - stego_image) ** 2)
+    mse = np.mean((original_image - stegoed_image) ** 2)
     if mse == 0:
        psnr = 100
     else:
@@ -280,7 +262,7 @@ if __name__ == '__main__':
     plt.xlabel('Pixel Values')
     plt.ylabel('Frequency')
     plt.subplot(1, 2, 2)
-    plt.hist(stego_image.ravel(), bins=256, range=(0, 256))
+    plt.hist(stegoed_image.ravel(), bins=256, range=(0, 256))
     plt.title('Histogram of Steganographic Image')
     plt.xlabel('Pixel Values')
     plt.ylabel('Frequency')
@@ -311,7 +293,7 @@ if __name__ == '__main__':
     
     #computing the separate histograms for RGB of stego image
     # Split the image into its red, green, and blue channels
-    b, g, r = cv2.split(stego_image)
+    b, g, r = cv2.split(stegoed_image)
     
     # Calculate and plot the histograms of the red, green, and blue channels separately
     plt.figure(figsize=(10, 5))
@@ -331,5 +313,7 @@ if __name__ == '__main__':
     plt.xlabel('Pixel Values')
     plt.ylabel('Frequency')
     plt.show()
-    stego_entropy = information_entropy('stegoo_test.png')
+
+    stegoed_image = path.split(".")[-2]+ "_stegoed.png"
+    stego_entropy = information_entropy(stegoed_image)
     print('Stego image information entropy:', stego_entropy)

@@ -69,7 +69,7 @@ def embed(cover_image, secret_data):
 
     # Saving the stegoed-image
 
-    cv2.imwrite(stegoed_image, cover_image) #we have to change this for every image to add stegoed images, tried but getting errors so working manually.
+    cv2.imwrite(stegoed_image, cover_image)  
 
 def dembed(input_image):
     input_image = cv2.imread(input_image)
@@ -114,9 +114,8 @@ def main(path):
                 encrypted_data=aes_algo.encrypt(message)
                 enc_time = time.time()-enc_start_time
 
-                # Loading the  cover image
+                # embedding and dembedding the data in the  cover image
                 embed(path, encrypted_data)
-                # Saving the stegoed-image
                 dembed(path) 
                 # now we extract the data and check the time
                 dec_start = time.time()
@@ -132,9 +131,8 @@ def main(path):
                 encrypted_data=des_object.encrypt(message)
                 enc_time = time.time()-enc_start_time
 
-                # Loading the cover image
                 secret_data=encrypted_data
-                
+                # embedding and dembedding the data into the cover image
                 embed(path,secret_data)
                 dembed(path)
  
@@ -221,10 +219,10 @@ def main(path):
                 enc_start_time=time.time()
                 encrypted_data=Chacha20.encrypt(message)
                 enc_time = time.time()-enc_start_time
-                # Loading the cover image
+                # encoding the encrypted data with utf-8
                 secret_data=encrypted_data.encode('utf-8')
-                #print("the secret data is :", secret_data)
-                #print("the type of secret data is :", type(secret_data))
+                # embedding and dembedding the data into the cover image
+
                 embed(path,secret_data)
                 dembed(path) 
                 # now we extract the data and check the time

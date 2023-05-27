@@ -3,8 +3,8 @@ from PIL import Image
 
 def information_entropy(image_path):
     '''
-    This method caclulates entropy which gives a measure of Stegno Image,
-    which gives a measure of how secure is the data - higher is better
+    This method caclulates entropy which gives a measure of randomness or information content present in Stegno Image,
+    which highlights a measure of how secure is the data - higher is better for greater complexity, randomness 
     '''
     # Load stego image
     image = Image.open(image_path)

@@ -1,7 +1,7 @@
 '''
 This program does the following:
     encrypts the text using ChaCha20, AES, DES, and RSA
-    then hides it in a simple image
+    then hides it in a simple image  - using Spread Spectrum Embedding technique
     then extract it from the image
     finally decrypts the extracted text
 

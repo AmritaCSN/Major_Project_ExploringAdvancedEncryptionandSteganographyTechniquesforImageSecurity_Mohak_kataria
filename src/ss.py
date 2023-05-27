@@ -1,7 +1,7 @@
 '''
 This program does the following:
     encrypts the text using ChaCha20, AES, DES, and RSA
-    then hides it in a simple image
+    then hides it in a simple image - using Spread Spectrum
     then extract it from the image
     finally decrypts the extracted text
 
@@ -29,7 +29,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from infoentrophy import information_entropy
 from rsa_python import rsa
+
 def embed(cover_image, secret_data):
+    stegoed_image = stegoed_image = cover_image.split(".")[-2]+ "_stegoed.png"
+    cover_image = cv2.imread(cover_image)
     # Converting  plaintext  to binary string
     binary_data = int.from_bytes(secret_data, byteorder='big')
     bin_data= bin(binary_data)[2:]  # Remove the '0b' prefix
@@ -45,49 +48,51 @@ def embed(cover_image, secret_data):
         for col in range(width):
             for channel in range(cha):
                             if index < len(bin_data):
-                    # Converting the  pixel value to binary string
+                                # Converting the  pixel value to binary string
                                 binary_pixel = format(cover_image[row, col, channel], '08b')
 
-                    # updating the  LSB of pixel value
+                                # updating the  LSB of pixel value
                                 modified_pixel = binary_pixel[:-1] + bin_data[index] + str(sequence[index])
 
-                    # converting modified pixel value back to integer
+                                # converting modified pixel value back to integer
                                 cover_image[row, col, channel] = int(modified_pixel, 2) % 256
 
                                 index += 1
                             else:
                                 break
             else:
-                            continue
+                continue
             break
         else:
-                        continue
+            continue
         break
 
     # Saving the stegoed-image
-    cv2.imwrite('chootad.png', cover_image) #we have to change this for every image to add stegoed images, tried but getting errors so working manually.
-def dembed(chootad):
-                bin_data = ''
-                stego_height=chootad.shape[0]
-                stego_width=chootad.shape[1]
-                stego_cha=chootad.shape[2]
-                for row in range(stego_height):
-                    for col in range(stego_width):
-                        for channel in range(stego_cha):
-       # Converting pixel value to binary string
-                            binary_pixel = format(chootad[row, col, channel], '08b')
 
-        # Extracting binary string of pixel 
-                            bin_data += binary_pixel[-2:]
+    cv2.imwrite(stegoed_image, cover_image) #we have to change this for every image to add stegoed images, tried but getting errors so working manually.
+
+def dembed(input_image):
+    input_image = cv2.imread(input_image)
+    bin_data = ''
+    stego_height=input_image.shape[0]
+    stego_width=input_image.shape[1]
+    stego_cha=input_image.shape[2]
+    for row in range(stego_height):
+        for col in range(stego_width):
+            for channel in range(stego_cha):
+                # Converting pixel value to binary string
+                binary_pixel = format(input_image[row, col, channel], '08b')
+
+                # Extracting binary string of pixel 
+                bin_data += binary_pixel[-2:]
 
     # Convert binary string to ASCII string
-                secret_data = ''
-                for i in range(0, len(bin_data), 8):
-                    secret_data += chr(int(bin_data[i:i+8], 2))
+    secret_data = ''
+    for i in range(0, len(bin_data), 8):
+                secret_data += chr(int(bin_data[i:i+8], 2))
+
 def main(path):
-
     stegoed_image = path.split(".")[-2]+ "_stegoed.png"
-
     message=''
     enc_time=0.0
 
@@ -109,14 +114,10 @@ def main(path):
                 encrypted_data=aes_algo.encrypt(message)
                 enc_time = time.time()-enc_start_time
 
-            # Loading the  cover image
-                
-                cover_image = cv2.imread(path)
-                secret_data=encrypted_data
-                embed(cover_image,secret_data)
-    # Saving the stegoed-image
-                stegoed_image=cv2.imread(path)
-                dembed(stegoed_image) 
+                # Loading the  cover image
+                embed(path, encrypted_data)
+                # Saving the stegoed-image
+                dembed(path) 
                 # now we extract the data and check the time
                 dec_start = time.time()
                 dec_time = time.time() - dec_start
@@ -132,35 +133,33 @@ def main(path):
                 enc_time = time.time()-enc_start_time
 
                 # Loading the cover image
-                cover_image = cv2.imread(path)
                 secret_data=encrypted_data
                 
-                embed(cover_image,secret_data)
-                stegoed_image=cv2.imread(path)
-                dembed(stegoed_image)
+                embed(path,secret_data)
+                dembed(path)
  
                 # now we extract the data and check the time
                 dec_start = time.time()
                 dec_time = time.time() - dec_start
                 print(f"{len(message)}\t{enc_time}\t{dec_time}")
             
-            if mode=='RSA':
+            elif mode=='RSA':
                 key_pair=rsa.generate_key_pair(1024)
                 enc_start_time=time.time()
                 encrypted_data=rsa.encrypt(message,key_pair["public"], key_pair["modulus"])
-            # Loading the cover image
+                # Loading the cover image
                 cover_image = cv2.imread(path)
                 secret_data=encrypted_data
                 enc_time=time.time()-enc_start_time
-            # Convert the plaintext to binary string
+                # Convert the plaintext to binary string
                 binary_data = ''.join(format(ord(char), '08b') for char in secret_data)
-    # Generating the pseudo-random sequence
+                # Generating the pseudo-random sequence
                 height=cover_image.shape[0]
                 width=cover_image.shape[1]
                 cha=cover_image.shape[2]
                 sequence_length = height * width * cha
                 sequence = [random.randint(0, 1) for i in range(sequence_length)]
-    # Embedding the ciphertext into the cover imge
+                # Embedding the ciphertext into the cover imge
                 index = 0
                 for row in range(height):
                     for col in range(width):
@@ -184,19 +183,19 @@ def main(path):
                         continue
                     break
 
-    # Saving the updated image as  stegoed-image
+                # Saving the updated image as  stegoed-image
                 stegoed_image = path.split(".")[-2]+ "_stegoed.png"
                 cv2.imwrite(stegoed_image, cover_image)
             
-             # Loading the  stegoed-image
+                # Loading the  stegoed-image
                 stegoed_image = cv2.imread(stegoed_image)
 
-    # Extract ciphertext  from stego-image
+                # Extract ciphertext  from stego-image
                 binary_data = ''
                 stego_height=stegoed_image.shape[0]
                 stego_width=stegoed_image.shape[1]
                 stego_cha=stegoed_image.shape[2]
-    # loops to dembeed the ciphertext in the images. Convert ciphertext to binary. Row and column and then channel.             
+                # loops to dembeed the ciphertext in the images. Convert ciphertext to binary. Row and column and then channel.             
                 for row in range(stego_height):
                     for col in range(stego_width):
                         for channel in range(stego_cha):
@@ -204,7 +203,7 @@ def main(path):
                             binary_pixel = format(stegoed_image[row, col, channel], '08b')
                 # extracting the pixel value
                             binary_data += binary_pixel[-2:]
-    # Converting the above receieved binary string to ASCII string
+                # Converting the above receieved binary string to ASCII string
                 secret_data = ''
                 for i in range(0, len(binary_data), 8):
                     secret_data += chr(int(binary_data[i:i+8], 2))
@@ -217,19 +216,17 @@ def main(path):
                 #print("decrypted data is: ",decrypted_data)
                 print(f"{len(message)}\t\t{enc_time}\t\t{dec_time}")
             
-            if mode=='ChaCha20':
+            elif mode=='ChaCha20':
 
                 enc_start_time=time.time()
                 encrypted_data=Chacha20.encrypt(message)
                 enc_time = time.time()-enc_start_time
                 # Loading the cover image
-                cover_image = cv2.imread(path)
                 secret_data=encrypted_data.encode('utf-8')
                 #print("the secret data is :", secret_data)
                 #print("the type of secret data is :", type(secret_data))
-                embed(cover_image,secret_data)
-                stegoed_image=cv2.imread(path)
-                dembed(stegoed_image) 
+                embed(path,secret_data)
+                dembed(path) 
                 # now we extract the data and check the time
                 dec_start = time.time()
                 dec_time = time.time() - dec_start

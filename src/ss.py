@@ -7,7 +7,9 @@ This program does the following:
 
 We analyze the performance of the encryption and decryption of the alogs
 Keeping all the other paramers - text and image - unaltered.
+Reference for MSE PSNR : https://www.geeksforgeeks.org/python-peak-signal-to-noise-ratio-psnr/
 '''
+
 from __future__ import absolute_import, unicode_literals
 from ChaCha20 import Chacha20
 from hashlib import sha256

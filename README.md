@@ -49,4 +49,3 @@ Follow the prompts to select the encryption algorithm, provide the necessary inp
 
 The program will encrypt the _plaintext_, embed the encrypted message within the image using **Spread Spectrum**, and save the steganographic image.
 
-To extract the encrypted message from the steganographic image, run the **Spread Spectrum** extraction again and provide the steganographic image file.

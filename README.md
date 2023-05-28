@@ -45,7 +45,7 @@ The program will encrypt the _plaintext_, embed the encrypted message within the
 
 Run the **Spread Spectrum** embedding and extraction: `python ss.py`
 
-Follow the prompts to select the encryption algorithm, provide the necessary inputs (_plaintext, key, image file_), and specify the output filenames.
+Follow the prompts to select the encryption algorithm, provide the necessary inputs (image file_), and specify the output filenames.
 
 The program will encrypt the _plaintext_, embed the encrypted message within the image using **Spread Spectrum**, and save the steganographic image.
 
